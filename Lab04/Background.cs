@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GameAlgoT2310;
+﻿using GameAlgoT2310;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Lab04
 {
-    public class Background : GameObject
+    public class Background : GameObject, ICollidable
     {
         public Texture2D BackgroundTexture;
         public Rectangle BackgroundBounds;
@@ -33,5 +28,14 @@ namespace Lab04
             _game.SpriteBatch.End();
         }
 
+        public string GetGroupName()
+        {
+            return this.GetType().Name; // return "Background"
+        }
+
+        public Rectangle GetBound()
+        {
+            return BackgroundBounds;
+        }
     }
 }

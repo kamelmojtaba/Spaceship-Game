@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GameAlgoT2310;
+﻿using GameAlgoT2310;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Lab04
 {
-    public class Asteroid : GameObject
+    public class Asteroid : GameObject, ICollidable
     {
 
         public Texture2D Texture;
