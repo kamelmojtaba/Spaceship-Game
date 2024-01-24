@@ -6,16 +6,37 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Lab04
 {
-
+    /*
+     * The movement in this file is using lorenz attractors algorithme to give a motion that feels random but it’s actually a defined pattern 
+     * The Link for more info about lorenz attractors : https://en.wikipedia.org/wiki/Lorenz_system
+     * 
+     */
     public class Missile : GameObject, ICollidable
     {
         public Texture2D Texture;
         public GameObject Shooter;
         public float Speed;
         public Vector2 Velocity;
-
         public Rectangle Bound;
         public SoundEffect ExplosionSoundEffect;
+
+        // Lorenz Attractor parameters
+        float a = 10.0f;
+        float b = 28.0f;
+        float c = 8.0f / 3.0f;
+        float Z = 0.0f;
+
+        public Vector2 IniPos;
+        public Vector2 B2Pos;
+        public Vector2 LIniPos;
+        public Vector2 DePos;
+        public Vector2 PreDePos;
+
+
+
+        // Timer
+        double timer = 0;
+        double disappearTime = 5; // seconds
         public Missile(Spaceship shooter, Vector2 startingPosition) : base()
         {
             Shooter = shooter;
@@ -26,12 +47,12 @@ namespace Lab04
             LoadContent();
 
             Origin.X = Texture.Width/2; Origin.Y = Texture.Height/2;
+            IniPos = Position;
+            B2Pos = new Vector2(0.04f,0.04f);
+            LIniPos = Position - B2Pos ;
+            PreDePos = Vector2.Zero;
             Orientation = Shooter.Orientation;
-            Speed = 200f;
-            Vector2 direction = new Vector2((float) Math.Cos(Orientation), (float) Math.Sin(Orientation));
-            Velocity = Speed * direction;
-
-
+           
             // Specify what collision to detect
             _game.CollisionEngine.Listen(typeof(Background), typeof(Missile)
                                         , CollisionEngine.NotAABB);
@@ -40,6 +61,7 @@ namespace Lab04
             Bound.Width = Texture.Width;
             Bound.Height = Texture.Height;
             Bound.Location = (Position - Origin).ToPoint();
+
         }
 
         protected override void LoadContent()
@@ -49,7 +71,10 @@ namespace Lab04
         }
         public override void Update()
         {
-            Position += Velocity * ScalableGameTime.DeltaTime;
+     
+            LorenzMove();
+            DeCode();
+            FinalPos();
 
         }
         public override void Draw()
@@ -87,7 +112,37 @@ namespace Lab04
             }
         }
 
+        private void LorenzMove()
+        {
+          
+            // Update position using Lorenz attractor
+            float dt = 0.006f;
+                float dx = a * (B2Pos.Y - B2Pos.X) * dt;
+                float dy = (B2Pos.X * (b - Z) - B2Pos.Y) * dt;
+                float dz = (B2Pos.X * B2Pos.Y - c * Z) * dt;
 
+                B2Pos.X += dx / 3f;
+                B2Pos.Y += dy * 5f;    
+                Z += dz / 3.0f; 
+        }
+
+        private void DeCode() 
+        {
+            DePos = B2Pos + LIniPos;
+            Vector2 temp = PreDePos - DePos;
+            if (-0.03f < temp.X && temp.X < 0.03f && -0.03f < temp.Y && temp.Y < 0.03f)
+            {
+                // Destroy this missile
+                GameObjectCollection.DeInstantiate(this);
+            }
+            PreDePos = DePos;
+        }
+
+        private void FinalPos()
+        {
+            Vector2 defPos =  Shooter.Position - IniPos;
+            Position = defPos + DePos ;
+        }
 
     }
 }

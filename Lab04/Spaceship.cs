@@ -97,7 +97,7 @@ namespace Lab04
             {
                 if(LastFireTime + CoolingPeriod <= ScalableGameTime.RealTime)
                 {
-                    Vector2 temp = new Vector2(Position.X, Position.Y + 1);
+                    Vector2 temp = new Vector2(Position.X, Position.Y);
                     Missile missile = new Missile(this, temp);
                     missile.Initialize();
 
